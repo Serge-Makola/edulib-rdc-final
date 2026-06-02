@@ -17,6 +17,8 @@ model User {
   name      String
   university String
   faculty   String
+  role      String     @default("student") // "student", "professor", "assistant", "ct"
+  isAdmin   Boolean    @default(false)
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   
