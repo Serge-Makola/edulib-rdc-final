@@ -1,10 +1,11 @@
-import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { NextRequest, NextResponse } from 'next/server';
 
-const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+
+// Mock database
+const users: any[] = [];
 
 export async function POST(request: NextRequest) {
   try {
@@ -19,9 +20,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Find user
-    const user = await prisma.user.findUnique({
-      where: { email },
-    });
+    const user = users.find(u => u.email === email);
 
     if (!user) {
       return NextResponse.json(

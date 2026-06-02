@@ -1,8 +1,8 @@
-import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import { NextRequest, NextResponse } from 'next/server';
 
-const prisma = new PrismaClient();
+// Mock database - replace with real Prisma when available
+const users: any[] = [];
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,10 +17,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user already exists
-    const existingUser = await prisma.user.findUnique({
-      where: { email },
-    });
-
+    const existingUser = users.find(u => u.email === email);
     if (existingUser) {
       return NextResponse.json(
         { error: 'Cet email est déjà utilisé' },
@@ -32,25 +29,26 @@ export async function POST(request: NextRequest) {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create user
-    const user = await prisma.user.create({
-      data: {
-        name,
-        email,
-        password: hashedPassword,
-        university,
-        faculty,
-        role: role || 'student',
-        isAdmin: false,
-      },
-    });
+    const newUser = {
+      id: Math.random().toString(36).substr(2, 9),
+      name,
+      email,
+      password: hashedPassword,
+      university,
+      faculty,
+      role: role || 'student',
+      isAdmin: false,
+    };
+
+    users.push(newUser);
 
     return NextResponse.json(
       { 
         message: 'Inscription réussie',
         user: {
-          id: user.id,
-          name: user.name,
-          email: user.email,
+          id: newUser.id,
+          name: newUser.name,
+          email: newUser.email,
         }
       },
       { status: 201 }
